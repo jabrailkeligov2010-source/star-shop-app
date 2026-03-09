@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Star Shop</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d0d18;--bg1:#14142a;--bg2:#1c1c36;--bg3:#242448;
+  --line:#2e2e56;--line2:#3a3a6a;
+  --acc:#7c6af0;--acc2:#a89eff;--acc3:#d8d2ff;--glow:rgba(124,106,240,.28);
+  --gold:#f5c842;--gold2:#f09030;--grn:#00c896;--grn2:#50f0c0;--red:#f07060;--blue:#70c0ff;
+  --t1:#f0f0ff;--t2:#c4c4f0;--t3:#8888c0;--t4:#505080;
+  --r:14px;--r2:10px;--ff:'Onest',sans-serif;
+}
+body.light {
+  --bg:#f0f0f8;--bg1:#ffffff;--bg2:#eaeaf6;--bg3:#e0e0f0;
+  --line:#d0d0e8;--line2:#b8b8dc;
+  --acc:#5a48d8;--acc2:#4a38c8;--acc3:#2a1898;--glow:rgba(90,72,216,.18);
+  --gold:#b87800;--gold2:#a06010;--grn:#007858;--grn2:#006848;--red:#c83820;--blue:#1858b8;
+  --t1:#0a0a20;--t2:#202040;--t3:#505080;--t4:#9090b8;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden}
+body{background:var(--bg);color:var(--t1);font-family:var(--ff);padding-bottom:76px}
+::-webkit-scrollbar{width:0}
+a{color:var(--acc2);text-decoration:none}
+
+.hdr{position:sticky;top:0;z-index:60;background:var(--bg);border-bottom:1.5px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px}
+.hlogo{width:36px;height:36px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,var(--acc),#3a28c0);display:flex;align-items:center;justify-content:center;font-size:18px}
+.hname{font-size:15px;font-weight:800;letter-spacing:-.3px;color:var(--t1)}
+.hsub{font-size:11px;color:var(--t3);margin-top:1px;font-weight:500}
+.hbal{margin-left:auto;flex-shrink:0;background:var(--bg2);border:1.5px solid var(--line2);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:800;color:var(--acc2)}
+body.light .hbal{color:var(--acc)}
+
+.pg{display:none;padding:14px 14px 6px;animation:fi .18s}
+.pg.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:60;background:var(--bg);border-top:1.5px solid var(--line);display:flex;padding:6px 0 env(safe-area-inset-bottom,6px)}
+.ni{flex:1;border:none;background:none;color:var(--t3);font-size:9px;font-weight:800;font-family:var(--ff);display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px;cursor:pointer;text-transform:uppercase;letter-spacing:.6px;transition:color .2s}
+.ni.on{color:var(--acc2)}
+body.light .ni.on{color:var(--acc)}
+.ni-ico{font-size:22px}
+
+.sl{font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1.6px;text-transform:uppercase;margin:18px 0 10px}
+.sl:first-child{margin-top:4px}
+
+.card{background:var(--bg1);border:1.5px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.card-hi{background:linear-gradient(140deg,var(--bg2),var(--bg1));border-color:var(--line2)}
+.card-acc{border-color:rgba(124,106,240,.5);background:linear-gradient(140deg,rgba(124,106,240,.1),var(--bg1))}
+.card-gold{border-color:rgba(245,200,66,.4);background:linear-gradient(140deg,rgba(245,200,66,.08),var(--bg1))}
+.card-grn{border-color:rgba(0,200,150,.3);background:linear-gradient(140deg,rgba(0,200,150,.07),var(--bg1))}
+body.light .card-acc{background:linear-gradient(140deg,rgba(90,72,216,.06),#fff)}
+body.light .card-gold{background:linear-gradient(140deg,rgba(184,120,0,.06),#fff)}
+
+.hero{background:linear-gradient(145deg,#0c0720,#0a1028);border:1.5px solid rgba(124,106,240,.4);border-radius:18px;padding:18px 16px;margin-bottom:14px;position:relative;overflow:hidden}
+body.light .hero{background:linear-gradient(145deg,#ede6ff,#dce4ff);border-color:rgba(90,72,216,.3)}
+.hero::before{content:'';position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(124,106,240,.3),transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(124,106,240,.22);border:1px solid rgba(124,106,240,.55);border-radius:20px;padding:3px 10px 3px 7px;font-size:10px;font-weight:800;color:var(--acc2);margin-bottom:8px}
+body.light .hero-tag{color:var(--acc)}
+.hero-h{font-size:22px;font-weight:900;line-height:1.1;margin-bottom:4px;color:var(--t1)}
+.hero-s{font-size:12px;color:var(--t2);font-weight:500}
+.hero-p{font-size:18px;font-weight:900;color:var(--gold);margin-top:10px}
+
+.iw{position:relative;margin-bottom:10px}
+.iw .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;color:var(--t3)}
+input,select,textarea{width:100%;padding:12px 12px 12px 38px;background:var(--bg2);border:1.5px solid var(--line);border-radius:var(--r2);color:var(--t1);font-size:13px;font-weight:500;font-family:var(--ff);outline:none;transition:border .18s;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--acc)}
+input::placeholder{color:var(--t4)}
+select{padding-left:12px;cursor:pointer}
+body.light input,body.light select{background:var(--bg3);color:var(--t1)}
+body.light input::placeholder{color:var(--t4)}
+
+.btn{width:100%;padding:14px;border:none;border-radius:var(--r);font-size:14px;font-weight:700;font-family:var(--ff);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px;transition:opacity .14s,transform .1s}
+.btn:last-child{margin-bottom:0}
+.btn:active{opacity:.8;transform:scale(.97)}
+.btn:disabled{opacity:.3;cursor:default;transform:none}
+.btn-p{background:linear-gradient(135deg,var(--acc),#4828d0);color:#fff;box-shadow:0 4px 20px var(--glow)}
+.btn-o{background:none;border:2px solid var(--acc);color:var(--acc2)}
+body.light .btn-o{color:var(--acc)}
+.btn-g{background:var(--bg2);color:var(--t2);border:1.5px solid var(--line)}
+body.light .btn-g{color:var(--t2)}
+.btn-gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a0e00;font-weight:800}
+
+.agrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.achip{padding:12px 6px;border:1.5px solid var(--line);border-radius:var(--r2);background:none;color:var(--t1);text-align:center;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:700;transition:all .18s}
+.achip .as{font-size:10px;color:var(--t3);margin-top:3px;font-weight:600}
+.achip.on{border-color:var(--acc);background:rgba(124,106,240,.14);color:var(--acc3)}
+body.light .achip.on{color:var(--acc);background:rgba(90,72,216,.1)}
+.achip.on .as{color:var(--acc2)}
+
+.tgl{display:flex;gap:6px;margin-bottom:12px}
+.tbtn{flex:1;padding:10px;border:1.5px solid var(--line);border-radius:var(--r2);background:none;color:var(--t2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--ff);transition:all .18s}
+.tbtn.on{border-color:var(--acc);background:rgba(124,106,240,.14);color:var(--t1)}
+body.light .tbtn.on{background:rgba(90,72,216,.1);color:var(--t1)}
+
+.pmlist{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.pmb{display:flex;align-items:center;gap:12px;padding:13px;border:1.5px solid var(--line);border-radius:var(--r);background:none;color:var(--t1);cursor:pointer;font-family:var(--ff);text-align:left;width:100%;transition:border-color .18s}
+.pmb.on{border-color:var(--acc);background:rgba(124,106,240,.09)}
+body.light .pmb.on{background:rgba(90,72,216,.07)}
+.pmb-ico{font-size:21px;width:28px;text-align:center;flex-shrink:0}
+.pmb-title{font-size:13px;font-weight:700;color:var(--t1)}
+.pmb-sub{font-size:11px;color:var(--t3);margin-top:2px;font-weight:500}
+.pm-check{margin-left:auto;font-size:16px;opacity:0}
+.pmb.on .pm-check{opacity:1;color:var(--grn)}
+
+.sbox{background:var(--bg2);border:1.5px solid var(--line2);border-radius:var(--r);padding:13px 14px;margin-bottom:12px}
+.sr{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:3px 0}
+.slb{color:var(--t3);font-weight:600}
+.sr.total{border-top:1px solid var(--line);margin-top:5px;padding-top:9px}
+.sr.total .slb{color:var(--t2);font-weight:700}
+.sr.total span:last-child{color:var(--gold);font-size:15px;font-weight:900}
+
+.frow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}
+.frow::-webkit-scrollbar{display:none}
+.fp{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1.5px solid var(--line);background:none;color:var(--t3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--ff);transition:all .18s;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px}
+.fp.on{background:var(--acc);border-color:var(--acc);color:#fff}
+
+.nftcard{background:var(--bg1);border:1.5px solid var(--line);border-radius:var(--r);padding:13px 12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .18s,background .18s}
+.nftcard:active{border-color:var(--acc);background:var(--bg2)}
+.nft-ico{width:50px;height:50px;flex-shrink:0;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:26px}
+.nft-name{font-size:13px;font-weight:800;color:var(--t1)}
+.nft-num{font-size:11px;color:var(--t3);margin-top:2px;font-weight:500}
+.nft-price{font-size:14px;font-weight:900;color:var(--gold)}
+.nft-ton{font-size:10px;color:var(--t3);margin-top:1px;font-weight:500}
+
+.bdg{font-size:9px;font-weight:800;padding:2px 7px;border-radius:16px;letter-spacing:.4px;text-transform:uppercase}
+.b-c{background:rgba(100,100,160,.25);color:#b0b0d8}
+.b-r{background:rgba(100,180,255,.2);color:var(--blue)}
+.b-e{background:rgba(240,110,90,.2);color:#f09080}
+.b-l{background:rgba(245,200,66,.2);color:var(--gold)}
+body.light .b-c{background:rgba(80,80,140,.12);color:#5858a8}
+body.light .b-r{background:rgba(20,80,180,.12);color:var(--blue)}
+body.light .b-e{background:rgba(180,50,30,.12);color:var(--red)}
+body.light .b-l{background:rgba(160,90,0,.15);color:var(--gold)}
+
+.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.vcard{background:var(--bg1);border:1.5px solid var(--line);border-radius:var(--r);padding:14px 10px;text-align:center;cursor:pointer;transition:border-color .18s,background .18s;position:relative}
+.vcard:active{border-color:var(--acc);background:var(--bg2)}
+.vcard-ico{font-size:34px;margin-bottom:7px}
+.vcard-name{font-size:12px;font-weight:800;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vcard-num{font-size:10px;color:var(--t3);margin-top:2px;font-weight:500}
+.vcard-status{position:absolute;top:7px;right:7px;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.3px}
+.vs-stored{background:rgba(0,200,150,.18);color:var(--grn)}
+.vs-listed{background:rgba(245,200,66,.18);color:var(--gold)}
+.vs-withdrawn{background:rgba(140,140,200,.12);color:var(--t3)}
+
+.phero{background:linear-gradient(150deg,#0c0720,#050e20);border:1.5px solid rgba(124,106,240,.35);border-radius:18px;padding:22px 14px 18px;text-align:center;margin-bottom:14px;overflow:hidden}
+body.light .phero{background:linear-gradient(150deg,#ede6ff,#dce4ff);border-color:rgba(90,72,216,.25)}
+.pava{width:72px;height:72px;border-radius:50%;margin:0 auto 10px;border:3px solid var(--acc);overflow:hidden;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 24px var(--glow)}
+.pava img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.pname{font-size:17px;font-weight:900;margin-bottom:3px;color:var(--t1)}
+.pid{font-size:11px;color:var(--t3);font-weight:600}
+
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.scrd{background:var(--bg1);border:1.5px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center}
+.sv{font-size:18px;font-weight:900;color:var(--acc2)}
+body.light .sv{color:var(--acc)}
+.ss3{font-size:10px;color:var(--t3);margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+
+.wblock{background:var(--bg1);border:1.5px solid rgba(112,192,255,.35);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.wblock-t{font-size:12px;font-weight:800;color:var(--blue);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.waddr{font-size:11px;color:var(--t2);word-break:break-all;background:var(--bg2);border-radius:8px;padding:9px 10px;margin-bottom:10px;border:1px solid var(--line);font-weight:500}
+.waddr.empty{color:var(--t4);font-style:italic}
+
+.balblock{background:linear-gradient(135deg,rgba(245,200,66,.1),rgba(240,144,48,.05));border:1.5px solid rgba(245,200,66,.3);border-radius:var(--r);padding:14px;margin-bottom:10px}
+body.light .balblock{background:linear-gradient(135deg,rgba(184,120,0,.07),rgba(160,96,16,.03));border-color:rgba(184,120,0,.3)}
+.bal-amt{font-size:24px;font-weight:900;color:var(--gold);letter-spacing:-.5px}
+.bal-sub{font-size:11px;color:var(--t3);margin-top:3px;font-weight:500}
+
+/* Бонусная карточка */
+.bcard{background:rgba(0,200,150,.07);border:1.5px solid rgba(0,200,150,.28);border-radius:var(--r);padding:13px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .18s}
+.bcard:active{border-color:var(--grn)}
+.bcard.done{opacity:.4;cursor:default;filter:grayscale(.6)}
+.bcard-ico{font-size:28px;flex-shrink:0}
+.bcard-title{font-size:13px;font-weight:800;color:var(--grn2)}
+body.light .bcard-title{color:var(--grn)}
+.bcard-sub{font-size:11px;color:var(--t3);margin-top:2px;font-weight:500}
+
+/* Реферальный блок */
+.refbox{background:var(--bg2);border:1.5px solid var(--line2);border-radius:10px;padding:11px 12px;font-size:12px;color:var(--blue);font-weight:600;word-break:break-all;cursor:pointer;margin-bottom:6px;transition:border-color .18s}
+.refbox:active{border-color:var(--acc)}
+
+/* Шаги */
+.step-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.step-row:last-child{border-bottom:none}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-txt{font-size:13px;color:var(--t2);font-weight:500;line-height:1.6}
+.step-txt b{color:var(--t1);font-weight:800}
+
+/* Инфо строки */
+.irow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.irow:last-child{border-bottom:none}
+.irow-lbl{color:var(--t3);font-weight:600}
+.irow-val{color:var(--t1);font-weight:700}
+
+.mls{background:var(--bg1);border:1.5px solid var(--line);border-radius:var(--r2);padding:12px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.mls-ico{font-size:22px;flex-shrink:0}
+.mls-name{font-size:13px;font-weight:800;color:var(--t1)}
+.mls-st{font-size:10px;margin-top:3px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.s-active{color:var(--grn)}
+.s-pending{color:var(--gold)}
+.s-sold{color:var(--t3)}
+.s-cancelled{color:var(--red)}
+
+/* Настройки */
+.strow{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer;text-decoration:none;color:inherit;transition:opacity .18s}
+.strow:last-child{border-bottom:none}
+.strow:active{opacity:.6}
+.stlbl{font-size:13px;font-weight:700;color:var(--t1)}
+.stsub{font-size:11px;color:var(--t3);margin-top:2px;font-weight:500}
+.starr{font-size:18px;color:var(--t4)}
+.sw{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0}
+.sw-sl{position:absolute;inset:0;cursor:pointer;background:var(--line2);border-radius:24px;transition:.25s}
+.sw-sl::before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s}
+.sw input:checked+.sw-sl{background:var(--acc)}
+.sw input:checked+.sw-sl::before{transform:translateX(20px)}
+
+.movl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end}
+.movl.on{display:flex;animation:fi .14s}
+.mbox{background:var(--bg1);border-top:1.5px solid var(--line);border-radius:20px 20px 0 0;width:100%;padding:14px 14px 34px;max-height:88vh;overflow-y:auto;animation:su .2s ease}
+@keyframes su{from{transform:translateY(100%)}to{transform:none}}
+.mh{width:36px;height:4px;background:var(--line2);border-radius:2px;margin:0 auto 16px}
+
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(6px);background:var(--bg2);border:1.5px solid var(--line2);color:var(--t1);padding:10px 20px;border-radius:13px;font-size:13px;font-weight:700;opacity:0;transition:all .22s;pointer-events:none;z-index:999;white-space:nowrap;max-width:calc(100vw - 28px);text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.empty{text-align:center;padding:32px 16px}
+.empty-i{font-size:42px;margin-bottom:10px}
+.empty-t{font-size:14px;font-weight:800;color:var(--t2);margin-bottom:5px}
+.empty-s{font-size:12px;color:var(--t3);line-height:1.8;font-weight:500}
+.ldr{display:flex;justify-content:center;padding:24px}
+.ldr::after{content:'';width:26px;height:26px;border-radius:50%;border:3px solid var(--line2);border-top-color:var(--acc);animation:sp .65s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.no-wallet{background:rgba(240,112,96,.1);border:1.5px solid rgba(240,112,96,.4);border-radius:var(--r);padding:13px;margin-bottom:12px;font-size:13px;line-height:1.7;color:var(--t2);font-weight:500}
+.no-wallet b{color:var(--red)}
+body.light .no-wallet{background:rgba(200,56,32,.07);border-color:rgba(200,56,32,.35)}
+
+.info-box{background:var(--bg2);border:1.5px solid var(--line2);border-radius:var(--r);padding:13px;margin-bottom:12px;font-size:12px;color:var(--t2);line-height:1.8;font-weight:500}
+.info-box b{color:var(--t1);font-weight:800}
+
+.hset{width:32px;height:32px;border-radius:10px;border:none;background:var(--bg2);color:var(--t2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .18s;margin-left:6px}
+.hset:active{background:var(--bg3)}
+
+/* Earn stats */
+.earn-stat{background:var(--bg1);border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.earn-stat-ico{font-size:26px;flex-shrink:0;width:42px;height:42px;border-radius:12px;background:var(--bg2);display:flex;align-items:center;justify-content:center}
+.earn-stat-val{font-size:18px;font-weight:900;color:var(--t1)}
+.earn-stat-lbl{font-size:11px;color:var(--t3);font-weight:600;margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hlogo">⭐</div>
+  <div>
+    <div class="hname">Star Shop</div>
+    <div class="hsub" id="hSub">—</div>
+  </div>
+  <div class="hbal" id="hBal">0 ₽</div>
+  <button class="hset" onclick="openSettings()">⚙️</button>
+</div>
+
+<!-- ══ КУПИТЬ ══ -->
+<div class="pg on" id="pg-buy">
+  <div class="hero">
+    <div class="hero-tag">🔥 Моментально</div>
+    <div class="hero-h">Звёзды Telegram</div>
+    <div class="hero-s">Без комиссии · Лучшая цена</div>
+    <div class="hero-p">1.38 ₽ / ⭐</div>
+  </div>
+
+  <div id="noWalletBuy" class="info-box" style="display:none">
+    👛 <b>TON кошелёк не привязан</b> — доступна оплата картой и с рублёвого баланса.<br>
+    <span style="color:var(--t3)">Для оплаты через Tonkeeper привяжи кошелёк в «Профиле».</span>
+  </div>
+
+  <div class="sl">Получатель</div>
+  <div class="tgl">
+    <button class="tbtn on" id="t-self"   onclick="setT('self')">👤 Себе</button>
+    <button class="tbtn"    id="t-friend" onclick="setT('friend')">🎁 Другу</button>
+  </div>
+  <div id="friendB" style="display:none">
+    <div class="iw"><span class="ic">@</span>
+      <input id="friendI" type="text" placeholder="username без @" oninput="calcBuy()">
+    </div>
+  </div>
+
+  <div class="sl">Количество звёзд</div>
+  <div class="agrid">
+    <button class="achip" onclick="pickA(50,this)">50 ⭐<div class="as">69 ₽</div></button>
+    <button class="achip" onclick="pickA(100,this)">100 ⭐<div class="as">138 ₽</div></button>
+    <button class="achip" onclick="pickA(200,this)">200 ⭐<div class="as">276 ₽</div></button>
+    <button class="achip" onclick="pickA(500,this)">500 ⭐<div class="as">690 ₽</div></button>
+    <button class="achip" onclick="pickA(1000,this)">1000 ⭐<div class="as">1380 ₽</div></button>
+    <button class="achip" id="custChip" onclick="openCust()">✏️ Своя<div class="as">50–10к</div></button>
+  </div>
+  <div id="custB" style="display:none;margin-bottom:10px">
+    <div class="iw"><span class="ic">⭐</span>
+      <input id="custI" type="number" min="50" max="10000" placeholder="50 – 10 000" oninput="custPick()">
+    </div>
+  </div>
+
+  <div id="buySum" class="sbox" style="display:none">
+    <div class="sr"><span class="slb">Получатель</span><span id="bs-tgt">—</span></div>
+    <div class="sr"><span class="slb">Звёзды</span><span id="bs-amt">—</span></div>
+    <div class="sr total"><span class="slb">К оплате</span><span id="bs-rub">—</span></div>
+  </div>
+
+  <div class="sl">Способ оплаты</div>
+  <div class="pmlist">
+    <button class="pmb on" id="pm-card" onclick="setPM('card')">
+      <span class="pmb-ico">💳</span>
+      <div><div class="pmb-title">Банковская карта</div><div class="pmb-sub">Visa · MasterCard · МИР</div></div>
+      <span class="pm-check">✓</span>
+    </button>
+    <button class="pmb" id="pm-ton" onclick="setPM('tonkeeper')">
+      <span class="pmb-ico">💎</span>
+      <div><div class="pmb-title">Tonkeeper</div><div class="pmb-sub">Прямой перевод TON</div></div>
+      <span class="pm-check">✓</span>
+    </button>
+    <button class="pmb" id="pm-balrub" onclick="setPM('balance_rub')">
+      <span class="pmb-ico">💰</span>
+      <div><div class="pmb-title">С рублёвого баланса</div><div class="pmb-sub" id="balSubRub">0 ₽</div></div>
+      <span class="pm-check">✓</span>
+    </button>
+    <button class="pmb" id="pm-balton" onclick="setPM('balance_ton')">
+      <span class="pmb-ico">🔷</span>
+      <div><div class="pmb-title">С TON-баланса</div><div class="pmb-sub" id="balSubTon">0 TON</div></div>
+      <span class="pm-check">✓</span>
+    </button>
+  </div>
+
+  <button class="btn btn-p" id="buyBtn" onclick="submitBuy()" disabled>⭐ Купить звёзды</button>
+</div>
+
+<!-- ══ МАРКЕТ ══ -->
+<div class="pg" id="pg-market">
+  <div id="noWalletMkt" class="no-wallet" style="display:none">
+    <b>⚠ Привяжи TON кошелёк</b> для покупки. Смотреть можно без кошелька.
+  </div>
+  <div class="iw" style="margin-bottom:10px">
+    <span class="ic">🔍</span>
+    <input id="searchI" type="text" placeholder="Поиск NFT..." oninput="renderMkt()">
+  </div>
+  <div class="frow">
+    <button class="fp on" onclick="setF('all',this)">Все</button>
+    <button class="fp" onclick="setF('common',this)">Common</button>
+    <button class="fp" onclick="setF('rare',this)">Rare</button>
+    <button class="fp" onclick="setF('epic',this)">Epic</button>
+    <button class="fp" onclick="setF('legendary',this)">Legendary</button>
+    <button class="fp" onclick="setF('cheap',this)">↓ Цена</button>
+    <button class="fp" onclick="setF('exp',this)">↑ Цена</button>
+  </div>
+  <div id="mktList"><div class="ldr"></div></div>
+</div>
+
+<!-- ══ ХРАНИЛИЩЕ ══ -->
+<div class="pg" id="pg-vault">
+  <div id="vaultGrid"><div class="ldr"></div></div>
+
+  <!-- Инструкция по продаже внизу раздела -->
+  <div style="margin-top:18px">
+    <div class="sl" style="margin-top:0" id="vault-sell-title">💼 Как продать NFT</div>
+    <div id="noWalletSell" class="no-wallet" style="display:none">
+      <b>⚠ <span data-ru="Привяжи TON кошелёк" data-en="Connect TON wallet"></span></b>
+      <span data-ru="прежде чем продавать NFT." data-en="before selling NFT."></span>
+    </div>
+    <div class="card card-gold" style="margin-bottom:12px">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-txt" data-ru="Открой <b>Telegram</b> → свой профиль → раздел <b>Подарки</b>" data-en="Open <b>Telegram</b> → your profile → <b>Gifts</b> section">Открой <b>Telegram</b> → свой профиль → раздел <b>Подарки</b></div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-txt" data-ru="Выбери NFT который хочешь продать → нажми <b>«Передать»</b>" data-en="Select NFT you want to sell → tap <b>«Transfer»</b>">Выбери NFT который хочешь продать → нажми <b>«Передать»</b></div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-txt">В поиске найди <b id="sBank">@StarShopBank</b> и отправь NFT</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-txt" data-ru="Вернись сюда и нажми кнопку ниже" data-en="Come back here and tap the button below">Вернись сюда и нажми кнопку ниже</div>
+      </div>
+      <div class="step-row" style="border:none">
+        <div class="step-num">5</div>
+        <div class="step-txt" data-ru="Администратор добавит NFT в твоё <b>Хранилище</b> — выставишь на продажу или выведешь обратно" data-en="Admin will add NFT to your <b>Vault</b> — list for sale or withdraw back">Администратор добавит NFT в твоё <b>Хранилище</b> — выставишь на продажу или выведешь обратно</div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="irow"><span class="irow-lbl" data-ru="Комиссия платформы" data-en="Platform fee">Комиссия платформы</span><span class="irow-val" style="color:var(--gold)">3%</span></div>
+      <div class="irow"><span class="irow-lbl" data-ru="Выплата" data-en="Payout">Выплата</span><span class="irow-val" data-ru="TON на твой кошелёк" data-en="TON to your wallet">TON на твой кошелёк</span></div>
+      <div class="irow"><span class="irow-lbl" data-ru="Срок добавления" data-en="Processing time">Срок добавления</span><span class="irow-val" data-ru="до 30 минут" data-en="up to 30 min">до 30 минут</span></div>
+    </div>
+    <button class="btn btn-p" id="sentBtn" onclick="nftSent()" disabled>✅ <span data-ru="Я передал NFT @StarShopBank" data-en="I sent NFT to @StarShopBank">Я передал NFT @StarShopBank</span></button>
+    <div style="font-size:11px;color:var(--t3);text-align:center;margin-top:6px;font-weight:500" data-ru="Нажми только после того как отправил NFT аккаунту @StarShopBank" data-en="Tap only after sending NFT to @StarShopBank">
+      Нажми только после того как отправил NFT аккаунту @StarShopBank
+    </div>
+  </div>
+</div>
+
+<!-- ══ ПРОФИЛЬ ══ -->
+<div class="pg" id="pg-profile">
+  <div class="phero">
+    <div class="pava">
+      <img id="pImg" style="display:none" src="" alt="">
+      <span id="pEmoji">👤</span>
+    </div>
+    <div class="pname" id="pName">Пользователь</div>
+    <div class="pid"   id="pId">ID: —</div>
+  </div>
+
+  <div class="sgrid">
+    <div class="scrd"><div class="sv" id="pBal">0</div><div class="ss3">₽ баланс</div></div>
+    <div class="scrd"><div class="sv" id="pBalTon">0</div><div class="ss3">TON баланс</div></div>
+    <div class="scrd"><div class="sv" id="pNfts">0</div><div class="ss3">NFT</div></div>
+  </div>
+
+  <!-- БАЛАНС -->
+  <div class="sl" data-ru="Баланс бота" data-en="Bot balance">Баланс бота</div>
+  <div class="balblock">
+    <div style="display:flex;gap:14px;align-items:center">
+      <div style="flex:1">
+        <div class="bal-amt"><span id="balAmt">0.00</span> ₽</div>
+        <div class="bal-sub" data-ru="Рублёвый баланс" data-en="RUB balance">Рублёвый баланс</div>
+      </div>
+      <div style="width:1px;background:var(--line);align-self:stretch"></div>
+      <div style="flex:1">
+        <div class="bal-amt" style="font-size:20px;color:var(--blue)"><span id="balAmtTon">0.0000</span> TON</div>
+        <div class="bal-sub">TON balance</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TON КОШЕЛЁК -->
+  <div class="sl">TON кошелёк</div>
+  <div class="wblock">
+    <div class="wblock-t">👛 Привязанный кошелёк</div>
+    <div class="waddr" id="wDisplay">не привязан</div>
+    <div style="display:flex;gap:7px">
+      <button class="btn btn-o" style="margin:0;flex:1;padding:10px" onclick="openWEdit()">✏️ Изменить</button>
+      <button class="btn btn-g" style="margin:0;flex:1;padding:10px" id="wDelBtn" onclick="delWallet()" disabled>🗑 Удалить</button>
+    </div>
+  </div>
+  <div id="wEditBlock" style="display:none;margin-bottom:12px">
+    <div class="iw"><span class="ic">👛</span>
+      <input id="wInp" type="text" placeholder="UQ... или EQ... адрес кошелька">
+    </div>
+    <div style="display:flex;gap:7px">
+      <button class="btn btn-p" style="margin:0;flex:1;padding:11px" onclick="saveWallet()">💾 Сохранить</button>
+      <button class="btn btn-g" style="margin:0;flex:1;padding:11px" onclick="closeWEdit()">Отмена</button>
+    </div>
+  </div>
+
+  <!-- МОИ ЛИСТИНГИ -->
+  <div class="sl">Мои листинги</div>
+  <div id="myListings"><div class="ldr"></div></div>
+
+  <button class="btn btn-o" id="wdBtn" onclick="doRefWd()" style="margin-top:4px">
+    💸 Вывести реферальные ⭐
+  </button>
+</div>
+
+<!-- ══ ЗАРАБОТАТЬ ══ -->
+<div class="pg" id="pg-earn">
+  <div class="hero" style="margin-bottom:14px">
+    <div class="hero-tag">💫 Бесплатно</div>
+    <div class="hero-h">Заработай звёзды</div>
+    <div class="hero-s">Без вложений · Каждый день</div>
+  </div>
+
+  <!-- СТАТИСТИКА -->
+  <div class="sgrid" style="margin-bottom:16px">
+    <div class="scrd"><div class="sv" id="eRef">0</div><div class="ss3">реф ⭐</div></div>
+    <div class="scrd"><div class="sv" id="eBonus">+1</div><div class="ss3">бонус/день</div></div>
+    <div class="scrd"><div class="sv" id="eRefs">0</div><div class="ss3">рефералов</div></div>
+  </div>
+
+  <!-- ЕЖЕДНЕВНЫЙ БОНУС -->
+  <div class="sl">Ежедневный бонус</div>
+  <div id="bonusCard" class="bcard" onclick="claimBonus()">
+    <div class="bcard-ico">🎯</div>
+    <div>
+      <div class="bcard-title">+1 ⭐ каждый день</div>
+      <div class="bcard-sub" id="bonusSub">Поставь реф. ссылку в bio и нажми</div>
+    </div>
+    <span style="font-size:17px;color:var(--t4);margin-left:auto">›</span>
+  </div>
+  <div class="info-box">
+    <b>Как получить бонус:</b><br>
+    1. Скопируй реферальную ссылку ниже<br>
+    2. Вставь её в bio своего Telegram профиля<br>
+    3. Нажми «+1 ⭐ каждый день» выше<br>
+    4. Администратор проверит и начислит звезду<br>
+    <span style="color:var(--t3)">Повторяй каждый день — копится на вывод!</span>
+  </div>
+
+  <!-- РЕФ ПРОГРАММА -->
+  <div class="sl">Реферальная программа</div>
+  <div class="card card-acc" style="margin-bottom:12px">
+    <div style="font-size:14px;font-weight:900;color:var(--t1);margin-bottom:8px">👥 2% с каждой покупки</div>
+    <div style="font-size:12px;color:var(--t2);line-height:1.8;font-weight:500">
+      Когда твой реферал покупает звёзды или NFT — ты автоматически получаешь <b style="color:var(--acc2)">2%</b> от суммы покупки в виде звёзд.<br><br>
+      <b>Минимум для вывода:</b> 50 ⭐<br>
+      <b>Выплата:</b> на аккаунт через Fragment<br>
+      <b>Ограничений нет</b> — чем больше рефералов, тем больше пассивный доход!
+    </div>
+  </div>
+
+  <div class="sl">Твоя реферальная ссылка</div>
+  <div class="refbox" id="refLink" onclick="copyRef()">загрузка...</div>
+  <div style="font-size:11px;color:var(--t3);margin-bottom:14px;font-weight:500;text-align:center">
+    📋 Нажми чтобы скопировать
+  </div>
+
+  <!-- КАК ЭТО РАБОТАЕТ -->
+  <div class="sl">Как это работает</div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="step-row">
+      <div class="step-num">1</div>
+      <div class="step-txt">Скопируй свою ссылку и поделись с друзьями в соцсетях, чатах или поставь в bio</div>
+    </div>
+    <div class="step-row">
+      <div class="step-num">2</div>
+      <div class="step-txt">Друг переходит по ссылке и запускает бота — он становится твоим рефералом навсегда</div>
+    </div>
+    <div class="step-row">
+      <div class="step-num">3</div>
+      <div class="step-txt">При каждой покупке реферала тебе начисляется <b>2% от суммы</b> автоматически</div>
+    </div>
+    <div class="step-row" style="border:none">
+      <div class="step-num">4</div>
+      <div class="step-txt">Когда накопишь <b>50 ⭐</b> — нажми кнопку вывода, и звёзды придут на твой аккаунт</div>
+    </div>
+  </div>
+
+  <button class="btn btn-p" id="wdBtn2" onclick="doRefWd()">
+    💸 Вывести реферальные ⭐ (<span id="refStarsVal">0</span>)
+  </button>
+</div>
+
+<!-- ══ НАСТРОЙКИ ══ -->
+<div class="movl" id="modal" onclick="closeModal()">
+  <div class="mbox" onclick="event.stopPropagation()">
+    <div class="mh"></div>
+    <div id="mBody"></div>
+  </div>
+</div>
+
+<!-- МОДАЛКА НАСТРОЕК -->
+<div class="movl" id="settingsModal" onclick="closeSettings()">
+  <div class="mbox" onclick="event.stopPropagation()">
+    <div class="mh"></div>
+    <div style="font-size:16px;font-weight:900;margin-bottom:16px">⚙️ <span data-ru="Настройки" data-en="Settings">Настройки</span></div>
+
+    <div class="sl" style="margin-top:0" data-ru="Оформление" data-en="Appearance">Оформление</div>
+    <div class="card">
+      <div class="strow" onclick="toggleTheme()">
+        <div><div class="stlbl">🌙 <span data-ru="Тёмная тема" data-en="Dark theme">Тёмная тема</span></div></div>
+        <label class="sw" onclick="event.stopPropagation()">
+          <input type="checkbox" id="themeChk" onchange="toggleTheme()" checked>
+          <span class="sw-sl"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="sl" data-ru="Язык" data-en="Language">Язык</div>
+    <div class="card">
+      <div style="display:flex;gap:8px;padding:4px 0">
+        <button id="lang-ru" class="tbtn on" onclick="setLang('ru')" style="flex:1;padding:12px">🇷🇺 Русский</button>
+        <button id="lang-en" class="tbtn"    onclick="setLang('en')" style="flex:1;padding:12px">🇬🇧 English</button>
+      </div>
+    </div>
+
+    <div class="sl" data-ru="Контакты" data-en="Contacts">Контакты</div>
+    <div class="card">
+      <a class="strow" id="lSupport" href="#" target="_blank">
+        <div><div class="stlbl">💬 <span data-ru="Поддержка" data-en="Support">Поддержка</span></div><div class="stsub">@TT_Vieta</div></div><span class="starr">›</span>
+      </a>
+      <a class="strow" href="https://t.me/+T9eTb0u_eso3NTAy" target="_blank">
+        <div><div class="stlbl">📝 <span data-ru="Отзывы" data-en="Reviews">Отзывы</span></div></div><span class="starr">›</span>
+      </a>
+      <a class="strow" id="lChannel" href="https://t.me/MegaBuyStarShop" target="_blank">
+        <div><div class="stlbl">📢 <span data-ru="Наш канал" data-en="Our channel">Наш канал</span></div></div><span class="starr">›</span>
+      </a>
+    </div>
+
+    <div class="sl" data-ru="Документы" data-en="Documents">Документы</div>
+    <div class="card">
+      <a class="strow" href="https://telegra.ph/Politika-konfidencialnosti-08-15-17" target="_blank">
+        <div><div class="stlbl">📄 <span data-ru="Политика конфиденциальности" data-en="Privacy Policy">Политика конфиденциальности</span></div></div><span class="starr">›</span>
+      </a>
+      <a class="strow" href="https://telegra.ph/Polzovatelskoe-soglashenie-08-15-10" target="_blank">
+        <div><div class="stlbl">📄 <span data-ru="Пользовательское соглашение" data-en="Terms of Service">Пользовательское соглашение</span></div></div><span class="starr">›</span>
+      </a>
+      <div class="strow" style="cursor:default">
+        <div><div class="stlbl">⭐ Star Shop</div><div class="stsub">v5.1 · © 2025</div></div>
+      </div>
+    </div>
+    <button class="btn btn-g" onclick="closeSettings()" data-ru="Закрыть" data-en="Close">Закрыть</button>
+  </div>
+</div>
+
+<!-- НАВ -->
+<div class="bnav">
+  <button class="ni on"  id="nb-buy"     onclick="goP('buy')">    <span class="ni-ico">⭐</span><span data-ru="Купить" data-en="Buy">Купить</span></button>
+  <button class="ni"     id="nb-market"  onclick="goP('market')"> <span class="ni-ico">🏪</span><span data-ru="Маркет" data-en="Market">Маркет</span></button>
+  <button class="ni"     id="nb-vault"   onclick="goP('vault')">  <span class="ni-ico">🗄</span><span data-ru="Хранилище" data-en="Vault">Хранилище</span></button>
+  <button class="ni"     id="nb-earn"    onclick="goP('earn')">   <span class="ni-ico">💫</span><span data-ru="Заработать" data-en="Earn">Заработать</span></button>
+  <button class="ni"     id="nb-profile" onclick="goP('profile')"><span class="ni-ico">👤</span><span data-ru="Профиль" data-en="Profile">Профиль</span></button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+var TG   = window.Telegram && window.Telegram.WebApp;
+var TGU  = (TG && TG.initDataUnsafe && TG.initDataUnsafe.user) || {};
+var BOT  = 'MegaBuyStarShop_Bot';
+var SUPP = 'TT_Vieta';
+var BANK = 'StarShopBank';
+var RATE = 1.38;
+var W_RUB = 30;
+var COMM  = 0.03;
+
+if (TG) { TG.ready(); TG.expand(); }
+
+/* STATE */
+var selAmt    = 0;
+var selPay    = 'card';
+var selTgt    = 'self';
+var mFilter   = 'all';
+var LISTINGS   = [];
+var VAULT      = [];
+var myListings = [];
+var refStars   = 0;
+var balance    = 0;
+var balanceTon = 0;
+var tonWallet  = '';
+var bonusDone  = false;
+
+var WALLET_KEY = 'ss_wallet_' + (TGU.id || 'anon');
+function storedWallet() { try { return localStorage.getItem(WALLET_KEY) || ''; } catch(e) { return ''; } }
+function storeWallet(w) { try { localStorage.setItem(WALLET_KEY, w); } catch(e) {} }
+
+/* ЯЗЫК */
+var curLang = 'ru';
+function setLang(lang) {
+  curLang = lang;
+  try { localStorage.setItem('lang', lang); } catch(e) {}
+  // Переключаем кнопки в настройках
+  var ru = document.getElementById('lang-ru');
+  var en = document.getElementById('lang-en');
+  if (ru) ru.classList.toggle('on', lang === 'ru');
+  if (en) en.classList.toggle('on', lang === 'en');
+  // Переводим все элементы с data-ru / data-en
+  document.querySelectorAll('[data-ru]').forEach(function(el) {
+    var txt = el.getAttribute('data-' + lang);
+    if (txt !== null) el.innerHTML = txt;
+  });
+}
+function initLang() {
+  try { curLang = localStorage.getItem('lang') || 'ru'; } catch(e) { curLang = 'ru'; }
+  setLang(curLang);
+}
+
+/* INIT */
+(function init() {
+  var dark = localStorage.getItem('theme') !== 'light';
+  document.body.classList.toggle('light', !dark);
+  document.getElementById('themeChk').checked = dark;
+
+  var name  = [TGU.first_name, TGU.last_name].filter(Boolean).join(' ') || 'Пользователь';
+  var uname = TGU.username ? '@' + TGU.username : 'ID: ' + (TGU.id || '—');
+  document.getElementById('hSub').textContent  = uname;
+  document.getElementById('pName').textContent = name;
+  document.getElementById('pId').textContent   = 'ID: ' + (TGU.id || '—');
+  document.getElementById('lSupport').href     = 'https://t.me/' + SUPP;
+  document.getElementById('sBank').textContent = '@' + BANK;
+
+  var img = document.getElementById('pImg');
+  if (TGU.photo_url) {
+    img.src = TGU.photo_url; img.style.display = 'block';
+    document.getElementById('pEmoji').style.display = 'none';
+  }
+
+  /* Данные от бота через start_param (base64 компактный формат) */
+  try {
+    var sp = (TG && TG.initDataUnsafe && TG.initDataUnsafe.start_param) || '';
+    if (sp) {
+      // Добавляем padding для base64
+      while (sp.length % 4) sp += '=';
+      var decoded = atob(sp.replace(/-/g,'+').replace(/_/g,'/'));
+      var d = JSON.parse(decoded);
+      // Компактный формат: b,bt,w,r,l,v,m
+      if (typeof d.b  !== 'undefined') balance    = parseFloat(d.b)  || 0;
+      if (typeof d.bt !== 'undefined') balanceTon = parseFloat(d.bt) || 0;
+      if (typeof d.r  !== 'undefined') refStars   = parseFloat(d.r)  || 0;
+      if (d.w) { tonWallet = d.w; storeWallet(d.w); }
+      if (d.l) LISTINGS = d.l.map(function(r) {
+        return {id:r[0],name:r[1],num:r[2],emoji:r[3],rarity:r[4],price:r[5],seller_id:r[6],seller:r[7]};
+      });
+      if (d.v) VAULT = d.v.map(function(r) {
+        return {id:r[0],name:r[1],num:r[2],emoji:r[3],rarity:r[4],status:r[5]};
+      });
+      if (d.m) myListings = d.m.map(function(r) {
+        return {id:r[0],name:r[1],num:r[2],emoji:r[3],price:r[4],status:r[5]};
+      });
+    }
+  } catch(e) { console.log('init data err:', e); }
+
+  /* Кошелёк из localStorage если бот не передал */
+  if (!tonWallet) tonWallet = storedWallet();
+
+  updateWalletUI();
+  updateBalUI();
+
+  var today = new Date().toISOString().slice(0,10);
+  if (localStorage.getItem('bonus_date') === today) { bonusDone = true; setBonusDone(); }
+
+  document.getElementById('refLink').textContent = 'https://t.me/' + BOT + '?start=' + (TGU.id || 0);
+  document.getElementById('eRef').textContent    = refStars.toFixed(2);
+  document.getElementById('refStarsVal').textContent = refStars.toFixed(2);
+
+  checkWalletWarnings();
+  renderMkt();
+  renderVault();
+  renderMyListings();
+  initLang();
+})();
+
+function updateBalUI() {
+  document.getElementById('hBal').textContent      = balance.toFixed(0) + ' ₽';
+  document.getElementById('pBal').textContent      = balance.toFixed(0);
+  document.getElementById('pBalTon').textContent   = balanceTon.toFixed(2);
+  document.getElementById('balAmt').textContent    = balance.toFixed(2);
+  document.getElementById('balAmtTon').textContent = balanceTon.toFixed(4);
+  document.getElementById('balSubRub').textContent = 'Баланс: ' + balance.toFixed(0) + ' ₽';
+  document.getElementById('balSubTon').textContent = 'Баланс: ' + balanceTon.toFixed(4) + ' TON';
+}
+
+function checkWalletWarnings() {
+  var has = !!tonWallet;
+  // Покупка звёзд — только мягкое уведомление (не блокируем)
+  var noW = document.getElementById('noWalletBuy');
+  if (noW) noW.style.display = has ? 'none' : 'block';
+  // Маркет и продажа — предупреждение
+  ['noWalletMkt','noWalletSell'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = has ? 'none' : 'block';
+  });
+  // Кнопка "Я передал" — блокируем без кошелька
+  var snt = document.getElementById('sentBtn');
+  if (snt) snt.disabled = !has;
+}
+
+/* НАВИГАЦИЯ */
+function goP(name) {
+  document.querySelectorAll('.pg').forEach(function(p) { p.classList.remove('on'); });
+  document.querySelectorAll('.ni').forEach(function(b) { b.classList.remove('on'); });
+  var pg = document.getElementById('pg-' + name);
+  var nb = document.getElementById('nb-' + name);
+  if (pg) pg.classList.add('on');
+  if (nb) nb.classList.add('on');
+}
+
+function toggleTheme() {
+  var light = document.body.classList.toggle('light');
+  document.getElementById('themeChk').checked = !light;
+  localStorage.setItem('theme', light ? 'light' : 'dark');
+}
+
+function openSettings() {
+  document.getElementById('settingsModal').classList.add('on');
+}
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('on');
+}
+
+/* ПОКУПКА ЗВЁЗД */
+function setT(t) {
+  selTgt = t;
+  document.getElementById('t-self').classList.toggle('on',   t === 'self');
+  document.getElementById('t-friend').classList.toggle('on', t === 'friend');
+  document.getElementById('friendB').style.display = t === 'friend' ? 'block' : 'none';
+  calcBuy();
+}
+
+function pickA(a, btn) {
+  selAmt = a;
+  document.querySelectorAll('.achip').forEach(function(b) { b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  document.getElementById('custB').style.display = 'none';
+  document.getElementById('custI').value = '';
+  calcBuy();
+}
+
+function openCust() {
+  document.querySelectorAll('.achip').forEach(function(b) { b.classList.remove('on'); });
+  document.getElementById('custChip').classList.add('on');
+  document.getElementById('custB').style.display = 'block';
+  setTimeout(function() { document.getElementById('custI').focus(); }, 60);
+}
+
+function custPick() {
+  var v = parseInt(document.getElementById('custI').value) || 0;
+  selAmt = (v >= 50 && v <= 10000) ? v : 0;
+  calcBuy();
+}
+
+function setPM(m) {
+  selPay = m;
+  var map = { card:'card', tonkeeper:'ton', balance_rub:'balrub', balance_ton:'balton' };
+  Object.keys(map).forEach(function(k) {
+    var el = document.getElementById('pm-' + map[k]);
+    if (el) el.classList.toggle('on', k === m);
+  });
+  calcBuy();
+}
+
+function calcBuy() {
+  var bs = document.getElementById('buySum');
+  var bb = document.getElementById('buyBtn');
+
+  // Показываем/скрываем кнопки оплаты в зависимости от наличия кошелька
+  var pmTon    = document.getElementById('pm-ton');
+  var pmBalton = document.getElementById('pm-balton');
+  if (pmTon)    pmTon.style.display    = tonWallet ? '' : 'none';
+  if (pmBalton) pmBalton.style.display = tonWallet ? '' : 'none';
+  // Если выбран способ требующий кошелька — переключаем на карту
+  if (!tonWallet && (selPay === 'tonkeeper' || selPay === 'balance_ton')) {
+    selPay = 'card';
+    setPM('card');
+  }
+
+  if (!selAmt) { bs.style.display = 'none'; bb.disabled = true; return; }
+  var rub = Math.round(selAmt * RATE);
+  var tgt = selTgt === 'self'
+    ? (TGU.username ? '@' + TGU.username : 'Мне')
+    : ('@' + (document.getElementById('friendI').value.replace('@','').trim() || '???'));
+  document.getElementById('bs-tgt').textContent = tgt;
+  document.getElementById('bs-amt').textContent = selAmt + ' ⭐';
+  document.getElementById('bs-rub').textContent = rub + ' ₽';
+  bs.style.display = 'block';
+
+  // Кошелёк нужен только для Tonkeeper и TON-баланса
+  var canBuy = selAmt > 0 && (selTgt === 'self' || document.getElementById('friendI').value.trim());
+  if (selPay === 'tonkeeper'  && !tonWallet)   canBuy = false;
+  if (selPay === 'balance_rub' && balance < rub) canBuy = false;
+  if (selPay === 'balance_ton' && (!tonWallet || balanceTon <= 0)) canBuy = false;
+  bb.disabled = !canBuy;
+}
+
+/* ══ ОТПРАВКА КОМАНД БОТУ ══
+   TG.sendData() работает ТОЛЬКО когда app открыт через web_app кнопку в боте.
+   Именно это и нужно — пользователь открывает магазин через "🌐 Открыть магазин",
+   нажимает кнопку → данные уходят боту → app закрывается → бот отвечает.
+   Это нормальное поведение Telegram Mini App.
+*/
+function tgSend(payload) {
+  // Кодируем payload в base64 и открываем бота через диплинк
+  // Бот получит /start <base64> и обработает действие
+  try {
+    var str = JSON.stringify(payload);
+    var encoded = btoa(unescape(encodeURIComponent(str)))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    var url = 'https://t.me/' + BOT + '?start=app_' + encoded;
+    if (TG && TG.openTelegramLink) {
+      TG.openTelegramLink(url);
+    } else {
+      window.open(url, '_blank');
+    }
+    return true;
+  } catch(e) {
+    toast('❌ Ошибка: ' + e.message);
+    return false;
+  }
+}
+
+function submitBuy() {
+  if (!selAmt) return toast('❌ Выбери количество');
+  if ((selPay === 'tonkeeper' || selPay === 'balance_ton') && !tonWallet)
+    return toast('❌ Для этого способа нужен TON кошелёк');
+  var friend = document.getElementById('friendI').value.replace('@','').trim();
+  if (selTgt === 'friend' && !friend) return toast('❌ Введи @username друга');
+  var target = selTgt === 'self' ? (TGU.username || String(TGU.id || 'me')) : friend;
+  tgSend({ action:'buy', amount:selAmt, target:target, payment:selPay });
+}
+
+/* МАРКЕТ */
+var RC = { common:'b-c', rare:'b-r', epic:'b-e', legendary:'b-l' };
+var BG = {
+  common:    'linear-gradient(135deg,#181830,#28285a)',
+  rare:      'linear-gradient(135deg,#102030,#183858)',
+  epic:      'linear-gradient(135deg,#281818,#502828)',
+  legendary: 'linear-gradient(135deg,#281e08,#504018)'
+};
+
+function setF(f, btn) {
+  mFilter = f;
+  document.querySelectorAll('.frow .fp').forEach(function(b) { b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  renderMkt();
+}
+
+function renderMkt() {
+  var el = document.getElementById('mktList');
+  if (!el) return;
+  var q = (document.getElementById('searchI') ? document.getElementById('searchI').value : '').toLowerCase();
+  var list = LISTINGS.filter(function(l) {
+    if (q && !(l.name||'').toLowerCase().includes(q)) return false;
+    if (mFilter === 'all' || mFilter === 'cheap' || mFilter === 'exp') return true;
+    return l.rarity === mFilter;
+  });
+  if (mFilter === 'cheap') list.sort(function(a,b) { return a.price - b.price; });
+  if (mFilter === 'exp')   list.sort(function(a,b) { return b.price - a.price; });
+
+  if (!list.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-i">🏪</div><div class="empty-t">Маркет пуст</div><div class="empty-s">Пока нет NFT на продаже.<br>Выставь свой во вкладке «Продать»!</div></div>';
+    return;
+  }
+  var ton = 0.015;
+  el.innerHTML = list.map(function(l) {
+    var lton = (l.price * ton).toFixed(3);
+    return '<div class="nftcard" onclick="openNFT(' + l.id + ')">' +
+      '<div class="nft-ico" style="background:' + (BG[l.rarity]||BG.common) + '">' + (l.emoji||'🎁') + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div class="nft-name">' + esc(l.name) + ' <span class="bdg ' + (RC[l.rarity]||'b-c') + '">' + (l.rarity||'common') + '</span></div>' +
+        '<div class="nft-num">' + esc(l.num||'') + (l.seller ? ' · @' + esc(l.seller) : '') + '</div>' +
+      '</div>' +
+      '<div style="text-align:right;flex-shrink:0">' +
+        '<div class="nft-price">' + l.price + ' ₽</div>' +
+        '<div class="nft-ton">≈ ' + lton + ' TON</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+function openNFT(id) {
+  var l = LISTINGS.find(function(x) { return x.id === id; });
+  if (!l) return;
+  var mine   = l.seller_id === (TGU.id || -1);
+  var canBuy = tonWallet && !mine;
+  var ton    = 0.015;
+  var lton   = (l.price * ton).toFixed(3);
+
+  var payHtml = '';
+  if (!canBuy) {
+    payHtml = '<div class="no-wallet"><b>⚠ Привяжи TON кошелёк</b> для покупки</div><button class="btn btn-g" onclick="closeModal()">Закрыть</button>';
+  } else {
+    payHtml = '<div class="sl" style="margin-top:0">Способ оплаты</div><div class="pmlist">' +
+      '<button class="pmb on" id="nftpm-card" onclick="nftSetPM(\'card\',this)"><span class="pmb-ico">💳</span><div><div class="pmb-title">Банковская карта</div><div class="pmb-sub">' + l.price + ' ₽</div></div><span class="pm-check">✓</span></button>' +
+      '<button class="pmb" id="nftpm-ton" onclick="nftSetPM(\'tonkeeper\',this)"><span class="pmb-ico">💎</span><div><div class="pmb-title">Tonkeeper</div><div class="pmb-sub">≈ ' + lton + ' TON</div></div><span class="pm-check">✓</span></button>' +
+      (balance >= l.price ? '<button class="pmb" id="nftpm-balrub" onclick="nftSetPM(\'balance_rub\',this)"><span class="pmb-ico">💰</span><div><div class="pmb-title">С рублёвого баланса</div><div class="pmb-sub">' + balance.toFixed(0) + ' ₽</div></div><span class="pm-check">✓</span></button>' : '') +
+      (balanceTon > 0 ? '<button class="pmb" id="nftpm-balton" onclick="nftSetPM(\'balance_ton\',this)"><span class="pmb-ico">🔷</span><div><div class="pmb-title">С TON-баланса</div><div class="pmb-sub">' + balanceTon.toFixed(4) + ' TON</div></div><span class="pm-check">✓</span></button>' : '') +
+      '</div>' +
+      '<button class="btn btn-p" onclick="buyNFT(' + l.id + ',' + l.price + ')">💳 Купить ' + l.price + ' ₽</button>' +
+      '<button class="btn btn-g" onclick="closeModal()">Отмена</button>';
+  }
+
+  document.getElementById('mBody').innerHTML =
+    '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">' +
+      '<div style="width:62px;height:62px;border-radius:15px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:34px;background:' + (BG[l.rarity]||BG.common) + '">' + (l.emoji||'🎁') + '</div>' +
+      '<div><div style="font-size:17px;font-weight:900;color:var(--t1)">' + esc(l.name) + '</div>' +
+      '<div style="font-size:12px;color:var(--t3);margin-top:2px;font-weight:500">' + esc(l.num||'') + '</div>' +
+      '<span class="bdg ' + (RC[l.rarity]||'b-c') + '" style="margin-top:6px;display:inline-block">' + (l.rarity||'common') + '</span></div>' +
+    '</div>' +
+    '<div class="sbox" style="margin-bottom:14px">' +
+      '<div class="sr"><span class="slb">Цена</span><span style="color:var(--gold);font-size:16px;font-weight:900">' + l.price + ' ₽</span></div>' +
+      '<div class="sr"><span class="slb">Примерно</span><span>≈ ' + lton + ' TON</span></div>' +
+      '<div class="sr"><span class="slb">Продавец</span><span>' + (l.seller ? '@'+esc(l.seller) : '—') + '</span></div>' +
+      '<div class="sr total"><span class="slb">В хранилище</span><span style="color:var(--grn)">Автоматически</span></div>' +
+    '</div>' +
+    (mine ? '<div class="info-box" style="text-align:center">Это твой лот</div><button class="btn btn-g" onclick="closeModal()">Закрыть</button>' : payHtml);
+
+  document.getElementById('modal').classList.add('on');
+}
+
+var nftSelPM = 'card';
+function nftSetPM(m, btn) {
+  nftSelPM = m;
+  document.querySelectorAll('#mBody .pmb').forEach(function(b) { b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+}
+
+function buyNFT(id, price) {
+  if ((nftSelPM === 'tonkeeper' || nftSelPM === 'balance_ton') && !tonWallet)
+    return toast('❌ Для TON оплаты нужен кошелёк');
+  closeModal();
+  tgSend({ action:'buy_nft', listing_id:id, price:price, payment:nftSelPM });
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('on'); }
+
+/* ХРАНИЛИЩЕ */
+var SL = { stored:'Хранится', listed:'На продаже', withdrawn:'Выведен', sold_out:'Продан' };
+var SS = { stored:'vs-stored', listed:'vs-listed', withdrawn:'vs-withdrawn', sold_out:'vs-withdrawn' };
+
+function renderVault() {
+  var el = document.getElementById('vaultGrid');
+  if (!el) return;
+  document.getElementById('pNfts').textContent = VAULT.filter(function(v) {
+    return v.status !== 'sold_out' && v.status !== 'withdrawn';
+  }).length;
+  if (!VAULT.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-i">🗄</div><div class="empty-t">Хранилище пусто</div><div class="empty-s">Купи NFT в маркете<br>или сдай через «Продать»</div></div>';
+    return;
+  }
+  el.innerHTML = '<div class="vgrid">' + VAULT.map(function(v) {
+    return '<div class="vcard" onclick="openVault(' + v.id + ')">' +
+      '<span class="vcard-status ' + (SS[v.status]||'vs-stored') + '">' + (SL[v.status]||v.status) + '</span>' +
+      '<div class="vcard-ico">' + (v.emoji||'🎁') + '</div>' +
+      '<div class="vcard-name">' + esc(v.name||v.nft_name||'NFT') + '</div>' +
+      '<div class="vcard-num">' + esc(v.num||v.nft_number||'') + '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+function openVault(id) {
+  var v = VAULT.find(function(x) { return x.id === id; });
+  if (!v) return;
+  var name   = v.name || v.nft_name || 'NFT';
+  var num    = v.num  || v.nft_number || '';
+  var emoji  = v.emoji || '🎁';
+  var stored = v.status === 'stored';
+  var listed = v.status === 'listed';
+
+  var html = '<div style="text-align:center;margin-bottom:16px">' +
+    '<div style="font-size:56px;margin-bottom:10px">' + emoji + '</div>' +
+    '<div style="font-size:17px;font-weight:900;color:var(--t1)">' + esc(name) + '</div>' +
+    '<div style="font-size:12px;color:var(--t3);margin-top:3px;font-weight:500">' + esc(num) + '</div>' +
+    '<span class="bdg ' + (RC[v.rarity||'common']||'b-c') + '" style="margin-top:8px;display:inline-block">' + (v.rarity||'common') + '</span>' +
+  '</div>';
+
+  if (stored) {
+    html +=
+      '<div class="sl" style="margin-top:0">Выставить на продажу</div>' +
+      '<div style="margin-bottom:10px"><div class="iw"><span class="ic">₽</span>' +
+        '<input id="lPrice" type="number" placeholder="Цена в рублях (мин. 100)"></div></div>' +
+      '<button class="btn btn-p" style="margin-bottom:12px" onclick="listFromVault(' + id + ')">📦 Выставить на продажу</button>' +
+      '<div class="sl">Вывести в профиль Telegram · ' + W_RUB + ' ₽</div>' +
+      '<div class="pmlist" style="margin-bottom:10px">' +
+        '<button class="pmb on" id="wpm-card" onclick="wSetPM(\'card\',this)"><span class="pmb-ico">💳</span><div><div class="pmb-title">Банковская карта</div><div class="pmb-sub">' + W_RUB + ' ₽</div></div><span class="pm-check">✓</span></button>' +
+        '<button class="pmb" id="wpm-ton" onclick="wSetPM(\'tonkeeper\',this)"><span class="pmb-ico">💎</span><div><div class="pmb-title">Tonkeeper</div><div class="pmb-sub">по курсу TON</div></div><span class="pm-check">✓</span></button>' +
+        (balance >= W_RUB ? '<button class="pmb" id="wpm-balrub" onclick="wSetPM(\'balance_rub\',this)"><span class="pmb-ico">💰</span><div><div class="pmb-title">С рублёвого баланса</div><div class="pmb-sub">' + balance.toFixed(0) + ' ₽</div></div><span class="pm-check">✓</span></button>' : '') +
+        (balanceTon > 0 ? '<button class="pmb" id="wpm-balton" onclick="wSetPM(\'balance_ton\',this)"><span class="pmb-ico">🔷</span><div><div class="pmb-title">С TON-баланса</div><div class="pmb-sub">' + balanceTon.toFixed(4) + ' TON</div></div><span class="pm-check">✓</span></button>' : '') +
+      '</div>' +
+      '<button class="btn btn-o" onclick="withdrawNFT(' + id + ')">📤 Вывести в профиль</button>' +
+      '<button class="btn btn-g" style="margin-top:7px" onclick="closeModal()">Закрыть</button>';
+  } else if (listed) {
+    html +=
+      '<div class="card card-gold" style="margin-bottom:12px;font-size:13px;font-weight:600;line-height:1.7">NFT выставлен на продажу. Ожидай покупателя.</div>' +
+      '<button class="btn btn-o" onclick="delistNFT(' + id + ',' + (v.listing_id||0) + ')">❌ Снять с продажи</button>' +
+      '<button class="btn btn-g" style="margin-top:7px" onclick="closeModal()">Закрыть</button>';
+  } else {
+    html +=
+      '<div style="text-align:center;color:var(--t3);font-size:13px;font-weight:600;margin-bottom:14px">' + (SL[v.status]||v.status) + '</div>' +
+      '<button class="btn btn-g" onclick="closeModal()">Закрыть</button>';
+  }
+
+  document.getElementById('mBody').innerHTML = html;
+  document.getElementById('modal').classList.add('on');
+}
+
+var wSelPM = 'card';
+function wSetPM(m, btn) {
+  wSelPM = m;
+  document.querySelectorAll('#mBody .pmb').forEach(function(b) { b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+}
+
+function listFromVault(vid) {
+  var price = parseInt(document.getElementById('lPrice') ? document.getElementById('lPrice').value : 0) || 0;
+  if (price < 100) return toast('❌ Минимальная цена 100 ₽');
+  closeModal();
+  tgSend({ action:'list_nft', vault_id:vid, price:price });
+}
+
+function delistNFT(vid, lid) {
+  closeModal();
+  tgSend({ action:'delist_nft', vault_id:vid, listing_id:lid });
+}
+
+function withdrawNFT(vid) {
+  if (!tonWallet) return toast('❌ Привяжи кошелёк!');
+  closeModal();
+  tgSend({ action:'withdraw_nft', vault_id:vid, payment:wSelPM });
+}
+
+/* ПРОДАЖА */
+function nftSent() {
+  if (!tonWallet) return toast('❌ Привяжи TON кошелёк сначала!');
+  tgSend({ action:'nft_sell_notify' });
+}
+
+/* TON КОШЕЛЁК */
+function updateWalletUI() {
+  var el  = document.getElementById('wDisplay');
+  var del = document.getElementById('wDelBtn');
+  if (tonWallet) {
+    el.textContent = tonWallet;
+    el.classList.remove('empty');
+    el.style.color = 'var(--blue)';
+    if (del) del.disabled = false;
+  } else {
+    el.textContent = 'не привязан';
+    el.classList.add('empty');
+    el.style.color = '';
+    if (del) del.disabled = true;
+  }
+  checkWalletWarnings();
+}
+
+function openWEdit() {
+  document.getElementById('wEditBlock').style.display = 'block';
+  document.getElementById('wInp').value = tonWallet;
+  setTimeout(function() { document.getElementById('wInp').focus(); }, 60);
+}
+function closeWEdit() { document.getElementById('wEditBlock').style.display = 'none'; }
+
+function saveWallet() {
+  var w = document.getElementById('wInp').value.trim();
+  if (w.length < 20) return toast('❌ Неверный адрес (слишком короткий)');
+  tonWallet = w;
+  storeWallet(w);
+  updateWalletUI();
+  closeWEdit();
+  // Отправляем боту через диплинк
+  tgSend({ action:'set_wallet', wallet:w });
+  toast('✅ Кошелёк сохранён! Бот подтвердит.');
+}
+
+function delWallet() {
+  tonWallet = '';
+  storeWallet('');
+  updateWalletUI();
+  tgSend({ action:'set_wallet', wallet:'' });
+  toast('🗑 Кошелёк удалён');
+}
+
+/* ПОПОЛНЕНИЕ */
+function openDepCard() {
+  tgSend({ action:'open_deposit', method:'card' });
+}
+function openDepTon() {
+  if (!tonWallet) return toast('❌ Привяжи кошелёк сначала!');
+  tgSend({ action:'open_deposit', method:'ton' });
+}
+
+/* КОНВЕРТАЦИЯ */
+function openConvert() {
+  var html =
+    '<div style="font-size:16px;font-weight:900;color:var(--t1);margin-bottom:14px">🔄 Конвертация баланса</div>' +
+    '<div class="sbox" style="margin-bottom:14px">' +
+      '<div class="sr"><span class="slb">Рублёвый баланс</span><span>' + balance.toFixed(2) + ' ₽</span></div>' +
+      '<div class="sr"><span class="slb">TON баланс</span><span>' + balanceTon.toFixed(4) + ' TON</span></div>' +
+    '</div>' +
+    '<div class="sl" style="margin-top:0">Направление</div>' +
+    '<div class="tgl" style="margin-bottom:12px">' +
+      '<button class="tbtn on" id="conv-rub2ton" onclick="setConvDir(\'rub_to_ton\',this)">₽ → TON</button>' +
+      '<button class="tbtn" id="conv-ton2rub" onclick="setConvDir(\'ton_to_rub\',this)">TON → ₽</button>' +
+    '</div>' +
+    '<div class="iw"><span class="ic" id="convIco">₽</span>' +
+      '<input id="convAmt" type="number" placeholder="Сумма" oninput="calcConv()">' +
+    '</div>' +
+    '<div id="convResult" class="sbox" style="display:none;margin-bottom:12px">' +
+      '<div class="sr total"><span class="slb">Получишь</span><span id="convGet">—</span></div>' +
+    '</div>' +
+    '<button class="btn btn-p" onclick="doConvert()">🔄 Конвертировать</button>' +
+    '<button class="btn btn-g" onclick="closeModal()">Отмена</button>';
+  document.getElementById('mBody').innerHTML = html;
+  document.getElementById('modal').classList.add('on');
+}
+
+var convDir = 'rub_to_ton';
+function setConvDir(d, btn) {
+  convDir = d;
+  document.querySelectorAll('#mBody .tbtn').forEach(function(b) { b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  document.getElementById('convIco').textContent = d === 'rub_to_ton' ? '₽' : '💎';
+  document.getElementById('convAmt').placeholder = d === 'rub_to_ton' ? 'Сумма в рублях' : 'Сумма в TON';
+  document.getElementById('convAmt').value = '';
+  document.getElementById('convResult').style.display = 'none';
+}
+
+function calcConv() {
+  var v = parseFloat(document.getElementById('convAmt').value) || 0;
+  var res = document.getElementById('convResult');
+  var get = document.getElementById('convGet');
+  if (!v) { res.style.display = 'none'; return; }
+  var rate = 700; /* примерный курс, точный — на сервере */
+  if (convDir === 'rub_to_ton') {
+    get.textContent = (v / rate).toFixed(4) + ' TON (по курсу ~' + rate + ' ₽/TON)';
+  } else {
+    get.textContent = (v * rate).toFixed(2) + ' ₽ (по курсу ~' + rate + ' ₽/TON)';
+  }
+  res.style.display = 'block';
+}
+
+function doConvert() {
+  var v = parseFloat(document.getElementById('convAmt').value) || 0;
+  if (!v || v <= 0) return toast('❌ Введи сумму');
+  if (convDir === 'rub_to_ton' && v > balance) return toast('❌ Недостаточно рублей');
+  if (convDir === 'ton_to_rub' && v > balanceTon) return toast('❌ Недостаточно TON');
+  closeModal();
+  tgSend({ action:'convert', direction:convDir, amount:v });
+}
+
+/* БОНУС */
+function setBonusDone() {
+  var c = document.getElementById('bonusCard');
+  if (c) { c.classList.add('done'); }
+  var s = document.getElementById('bonusSub');
+  if (s) s.textContent = 'Уже получен сегодня · Приходи завтра!';
+}
+
+function claimBonus() {
+  if (bonusDone) return toast('⏳ Уже получен сегодня!');
+  bonusDone = true;
+  localStorage.setItem('bonus_date', new Date().toISOString().slice(0,10));
+  setBonusDone();
+  tgSend({ action:'daily_bonus' });
+  toast('📨 Переходим в бот...');
+}
+
+function copyRef() {
+  var t = document.getElementById('refLink').textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(t).then(function() { toast('✅ Ссылка скопирована!'); }).catch(function() { fbCopy(t); });
+  } else { fbCopy(t); }
+}
+function fbCopy(t) {
+  var e = document.createElement('textarea'); e.value = t;
+  e.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(e);
+  e.select(); document.execCommand('copy'); document.body.removeChild(e);
+  toast('✅ Ссылка скопирована!');
+}
+
+function doRefWd() {
+  if (refStars < 50) return toast('❌ Нужно минимум 50 ⭐ для вывода');
+  tgSend({ action:'ref_withdraw' });
+}
+
+function renderMyListings() {
+  var el = document.getElementById('myListings');
+  if (!el) return;
+  if (!myListings.length) {
+    el.innerHTML = '<div class="empty" style="padding:10px 0"><div class="empty-i" style="font-size:28px">📭</div><div class="empty-t">Нет листингов</div><div class="empty-s">Выставь NFT из хранилища</div></div>';
+    return;
+  }
+  var SLS = { active:'Продаётся', pending:'На проверке', sold:'Продан', cancelled:'Снят' };
+  var SLC = { active:'s-active', pending:'s-pending', sold:'s-sold', cancelled:'s-cancelled' };
+  el.innerHTML = myListings.map(function(l) {
+    return '<div class="mls">' +
+      '<div class="mls-ico">' + (l.emoji||'🎁') + '</div>' +
+      '<div style="flex:1">' +
+        '<div class="mls-name">' + esc(l.name||'NFT') + ' ' + esc(l.num||'') + '</div>' +
+        '<div class="mls-st ' + (SLC[l.status]||'s-pending') + '">' + (SLS[l.status]||l.status) + ' · ' + l.price + ' ₽</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+/* UTILS */
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+var _tt;
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('on');
+  clearTimeout(_tt);
+  _tt = setTimeout(function() { el.classList.remove('on'); }, 2800);
+}
+</script>
+</body>
+</html>
